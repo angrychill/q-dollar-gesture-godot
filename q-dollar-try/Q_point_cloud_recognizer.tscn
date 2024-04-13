@@ -1,24 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://h738q350bg6b"]
+[gd_scene load_steps=6 format=3 uid="uid://h738q350bg6b"]
 
 [ext_resource type="Script" path="res://q_point_cloud_recognizer.gd" id="1_l0wts"]
-[ext_resource type="Script" path="res://gesture.gd" id="2_wd6i3"]
+[ext_resource type="Resource" uid="uid://7ykxhm1h7swo" path="res://gesture_templates/arrow_1.res" id="2_s5bv7"]
+[ext_resource type="Resource" uid="uid://b71jgbmu3d8f3" path="res://gesture_templates/arrow_2.res" id="3_fcvqt"]
+[ext_resource type="Resource" uid="uid://b5dhn3nkq85cc" path="res://gesture_templates/heart_1.res" id="4_j2y5j"]
+[ext_resource type="Resource" uid="uid://tybemvubo64n" path="res://gesture_templates/heart_2.res" id="5_feew2"]
 
-[node name="Node" type="Node" node_paths=PackedStringArray("gesture_set")]
+[node name="Node" type="Node"]
 script = ExtResource("1_l0wts")
-gesture_set = [null, null, null]
-
-[node name="Templates" type="Node" parent="."]
-
-[node name="T" type="Node2D" parent="Templates"]
-script = ExtResource("2_wd6i3")
-
-[node name="Line2D" type="Line2D" parent="Templates/T"]
-points = PackedVector2Array(353, 114, 573, 117)
-
-[node name="Line2D2" type="Line2D" parent="Templates/T"]
-points = PackedVector2Array(458, 125, 461, 277)
-
-[node name="Gesture" type="Node2D" parent="Templates"]
-script = ExtResource("2_wd6i3")
-
-[node name="Line2D" type="Line2D" parent="Templates/Gesture"]
+gesture_set = Array[Resource("res://gesture.gd")]([ExtResource("2_s5bv7"), ExtResource("3_fcvqt"), ExtResource("4_j2y5j"), ExtResource("5_feew2")])

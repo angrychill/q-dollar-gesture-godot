@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cbc7s0axvi3xm"]
 
-[ext_resource type="Script" path="res://gesture.gd" id="1_tn7ho"]
+[ext_resource type="Script" path="res://gesture_node.gd" id="1_tn7ho"]
 
 [node name="Gesture" type="Node2D"]
 script = ExtResource("1_tn7ho")

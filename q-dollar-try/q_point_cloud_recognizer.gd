@@ -1,14 +1,16 @@
-class_name QPointCloudRecognizer extends Node
+extends Node
+class_name QPointCloudRecognizer
 
 @export var early_abandoning : bool = true
 @export var lower_bounding : bool = true
 
 @export var gesture_set : Array[Gesture]
 
-func classify(candidate : Gesture, template_set : Array[Gesture]): #-> string, takes gesture candidate, template set
+func classify(candidate : Gesture): #-> string, takes gesture candidate, template set
+	prints("received candidate", candidate)
 	var min_distance : float = INF
 	var gesture_class : StringName = "";
-	for template : Gesture in template_set:
+	for template : Gesture in gesture_set:
 		var dist : float = greedy_cloud_match(candidate, template, min_distance)
 
 
@@ -18,8 +20,8 @@ func greedy_cloud_match(gesture_1 : Gesture, gesture_2 : Gesture, min_so_far : f
 	var step : int = floori(pow(n, 1.0 - eps))
 	
 	if lower_bounding:
-		var LB1 : Array[float] = compute_lower_bound(gesture_1.points_normalized_int, gesture_2.points_normalized_int, gesture_2.LUT, step)
-		var LB2 : Array[float] = compute_lower_bound(gesture_2.points_normalized_int, gesture_1.points_normalized_int, gesture_1.LUT, step)
+		var LB1 : Array[float] = compute_lower_bound(gesture_1.points_int, gesture_2.points_int, gesture_2.LUT, step)
+		var LB2 : Array[float] = compute_lower_bound(gesture_2.points_int, gesture_1.points_int, gesture_1.LUT, step)
 	return 1.0
 
 
@@ -34,7 +36,7 @@ func compute_lower_bound(points1 : Array[Vector3i], points2 : Array[Vector3i], L
 	LB[0] = 0
 	
 	for i in range(0, n):
-		var index : int = LUT[Vector2(points1[i].x / Gesture.LUT_SCALE_FACTOR, points1[i].y / Gesture.LUT_SCALE_FACTOR)]
+		var index : int = LUT[Vector2(points1[i].x / GestureNode.LUT_SCALE_FACTOR, points1[i].y / GestureNode.LUT_SCALE_FACTOR)]
 		var dist : float = sq_euclidean_distance(points1[i], points2[index])
 		SAT[i] = dist if i == 0 else SAT[i-1] + dist
 		LB[0] += (n-i) * dist
@@ -60,3 +62,17 @@ func sq_euclidean_distance(a : Vector3, b : Vector3) -> float:
 	var z : float = pow((a.x-b.x),2) + pow((a.y-b.y), 2)
 	return z
 
+#region gesture input
+var can_draw : bool = false
+func _input(event: InputEvent) -> void:
+
+	if event.is_action_pressed("start_gesture"):
+		print("space down")
+		can_draw = true
+	if event.is_action_released("start_gesture"):
+		print("space up")
+		can_draw = false
+	if event.is_action_pressed("recognize_gesture"):
+		print("call recognition function")
+		#register_gesture()
+#endregion
