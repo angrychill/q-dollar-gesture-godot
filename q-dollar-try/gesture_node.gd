@@ -36,6 +36,9 @@ func _input(event: InputEvent) -> void:
 		register_gesture()
 		var recognizer = QPointCloudRecognizer.new()
 		recognizer.classify(gesture_resource)
+		for child in get_children():
+			child.queue_free()
+		gesture_resource = null
 
 	if can_draw:
 		if event.is_action_pressed("line_press"):
