@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://h738q350bg6b"]
+
+[ext_resource type="Script" path="res://q_point_cloud_recognizer.gd" id="1_l0wts"]
+[ext_resource type="Script" path="res://gesture.gd" id="2_wd6i3"]
+
+[node name="Node" type="Node" node_paths=PackedStringArray("gesture_set")]
+script = ExtResource("1_l0wts")
+gesture_set = [null, null, null]
+
+[node name="Templates" type="Node" parent="."]
+
+[node name="T" type="Node2D" parent="Templates"]
+script = ExtResource("2_wd6i3")
+
+[node name="Line2D" type="Line2D" parent="Templates/T"]
+points = PackedVector2Array(353, 114, 573, 117)
+
+[node name="Line2D2" type="Line2D" parent="Templates/T"]
+points = PackedVector2Array(458, 125, 461, 277)
+
+[node name="Gesture" type="Node2D" parent="Templates"]
+script = ExtResource("2_wd6i3")
+
+[node name="Line2D" type="Line2D" parent="Templates/Gesture"]
