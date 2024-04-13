@@ -1,23 +1,24 @@
 extends Node
 class_name QPointCloudRecognizer
 
-@export var early_abandoning : bool = false
-@export var lower_bounding : bool = false
+@export var early_abandoning : bool = true
+@export var lower_bounding : bool = true
 
 @export var gesture_set : Array[Gesture]
 
-func _init() -> void:
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/arrow_1.res"))
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/arrow_2.res"))
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/heart_1.res"))
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/heart_2.res"))
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/heart_3.res"))
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/H_1.res"))
-	gesture_set.append(ResourceLoader.load("res://gesture_templates/H_2.res"))
-	
-	
+signal classified_gesture(gesture_name : StringName)
 
-func classify(candidate : Gesture): #-> string, takes gesture candidate, template set
+func _init() -> void:
+	var dir = DirAccess.open("res://gesture_templates")
+	if dir:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			var rname = "res://gesture_templates/" + str(file_name)
+			gesture_set.append(ResourceLoader.load(rname))
+			file_name = dir.get_next()
+
+func classify(candidate : Gesture) -> StringName: #-> string, takes gesture candidate, template set
 	prints("received candidate", candidate)
 	var min_distance : float = INF
 	var gesture_class : StringName = "";
@@ -27,16 +28,17 @@ func classify(candidate : Gesture): #-> string, takes gesture candidate, templat
 			min_distance = dist
 			gesture_class = template.gesture_name
 	prints("recognized gesture:", gesture_class)
+	classified_gesture.emit(gesture_class)
 	return gesture_class
 
 func greedy_cloud_match(gesture_1 : Gesture, gesture_2 : Gesture, min_so_far : float) -> float: #-> float, takes two gestures, minsofar
 	var n : int = gesture_1.points_int.size()
 	var eps : float = 0.5 # number of greedy search trials (0.0 - 1.0)
-	var step : int = floori(pow(n, 1.0 - eps))
+	var step : int = floor(pow(n, 1.0 - eps))
 	
 	if lower_bounding:
-		var LB1 : Array[float] = compute_lower_bound(gesture_1.points_int, gesture_2.points_int, gesture_2.LUT, step)
-		var LB2 : Array[float] = compute_lower_bound(gesture_2.points_int, gesture_1.points_int, gesture_1.LUT, step)
+		var LB1 : Array[float] = compute_lower_bound(gesture_1, gesture_2, gesture_2.LUT, step)
+		var LB2 : Array[float] = compute_lower_bound(gesture_2, gesture_1, gesture_1.LUT, step)
 		
 		var indexLB : int = 0
 		for i in range(0, n, step):
@@ -54,9 +56,10 @@ func greedy_cloud_match(gesture_1 : Gesture, gesture_2 : Gesture, min_so_far : f
 	return min_so_far
 
 
-func compute_lower_bound(points1 : Array[Vector3i], points2 : Array[Vector3i], LUT : Dictionary, step : int) -> Array[float]: #-> float array, takes arrays points1, points2, int double array
+func compute_lower_bound(gesture_1 : Gesture, gesture_2 : Gesture, LUT : Dictionary, step : int) -> Array[float]: #-> float array, takes arrays points1, points2, int double array
+	pass
 	# for lookup table, int step
-	var n : int = points1.size()
+	var n : int = gesture_1.points.size()
 	var LB : Array[float]
 	LB.resize(n / step + 1)
 	var SAT : Array[float]
@@ -65,18 +68,22 @@ func compute_lower_bound(points1 : Array[Vector3i], points2 : Array[Vector3i], L
 	LB[0] = 0
 	
 	for i in range(0, n):
-		var index : int = LUT[Vector2(points1[i].y / GestureNode.LUT_SCALE_FACTOR, points1[i].x / GestureNode.LUT_SCALE_FACTOR)]
-		var dist : float = sq_euclidean_distance(points1[i], points2[index])
-		SAT[i] = dist if i == 0 else SAT[i-1] + dist
+		var index : int = LUT[Vector2(gesture_1.points_int[i].x / GestureNode.LUT_SCALE_FACTOR, gesture_1.points_int[i].y / GestureNode.LUT_SCALE_FACTOR)]
+		var dist : float = sq_euclidean_distance(gesture_1.points[i], gesture_2.points[index])
+		if (i == 0):
+			SAT[i] = dist
+		else:
+			SAT[i] = SAT[i-1] + dist
+		#SAT[i] = dist if i == 0 else SAT[i-1] + dist
 		LB[0] += (n-i) * dist
 	
-	var i = step
+	#var i = step
 	var indexLB = 1
-	while (i < n):
-		LB[indexLB] = LB[0] + i * SAT[n - 1] - n * SAT[i - 1]
-		i += step
-		indexLB += 1
 	
+	for j in range(step, n, step):
+		LB[indexLB] = LB[0] + j * SAT[n - 1] - n * SAT[j - 1]
+		indexLB += 1
+	pass
 	return LB
 
 

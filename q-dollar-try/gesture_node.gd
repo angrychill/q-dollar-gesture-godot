@@ -22,15 +22,22 @@ const LUT_SCALE_FACTOR : int = MAX_INT_COORDS / LUT_SIZE
 var LUT = {}
 #endregion
 
-var can_draw : bool = false
+
+#region line2d parameters
+@export var line_width : float = 5
+@export var joint_mode : int = 2
+@export var cap_mode : int = 2
+#endregion
+
+var can_draw : bool = true
 var stroke : Line2D
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("start_gesture"):
-		print("space down")
-		can_draw = true
-	if event.is_action_released("start_gesture"):
-		print("space up")
-		can_draw = false
+	#if event.is_action_pressed("start_gesture"):
+		#print("space down")
+		#can_draw = true
+	#if event.is_action_released("start_gesture"):
+		#print("space up")
+		#can_draw = false
 	if event.is_action_pressed("recognize_gesture"):
 		print("call recognition function")
 		register_gesture()
@@ -38,13 +45,21 @@ func _input(event: InputEvent) -> void:
 		recognizer.classify(gesture_resource)
 		for child in get_children():
 			child.queue_free()
+		points_normalized.clear()
+		points_normalized_int.clear()
+		points_raw.clear()
 		gesture_resource = null
+		recognizer.queue_free()
 
 	if can_draw:
 		if event.is_action_pressed("line_press"):
 			print("mouse down")
 			stroke = Line2D.new()
 			add_child(stroke)
+			stroke.begin_cap_mode = cap_mode
+			stroke.end_cap_mode = cap_mode
+			stroke.antialiased = true
+			stroke.width = line_width
 		if event.is_action_released("line_press"):
 			print("mouse up")
 			stroke = null
