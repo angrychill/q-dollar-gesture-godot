@@ -241,6 +241,6 @@ func save_gesture_to_resource():
 		#"LUT_SIZE" : LUT_SIZE,
 		#"LUT_SCALE_FACTOR" : LUT_SCALE_FACTOR
 	#}, true)
-	#var save_path = "res://res.res"
-	#ResourceSaver.save(gesture_resource, save_path)
+	var save_path = "res://res.res"
+	ResourceSaver.save(gesture_resource, save_path)
 	#print(ResourceLoader.load(save_path))
