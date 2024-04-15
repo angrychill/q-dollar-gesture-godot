@@ -14,6 +14,14 @@ config/name="q dollar try"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+QPointCloudRecognizer="*res://q_point_cloud_recognizer.gd"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/q_gesture_recognizer/plugin.cfg")
+
 [input]
 
 start_gesture={

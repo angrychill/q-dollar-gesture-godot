@@ -4,9 +4,14 @@ class_name GestureNode extends Node2D
 var points_normalized : Array[Vector3] #gesture points normalized
 var points_normalized_int : Array[Vector3i] # turned into integers
 var points_raw : Array[Vector3] #gesture points not normalized
-var gesture_name : StringName #gesture name/class, maybe change to gesture type
+@export var gesture_name : StringName #gesture name/class, maybe change to gesture type
+@export var gesture_filename : String
 
 @export var gesture_resource : Gesture
+
+@export var create_new_gesture : bool
+
+signal gesture_classified(GestureName : StringName)
 
 # vector 3 is used, where z represents stroke index of line
 
@@ -38,33 +43,36 @@ func _input(event: InputEvent) -> void:
 	#if event.is_action_released("start_gesture"):
 		#print("space up")
 		#can_draw = false
+	#if not Engine.is_editor_hint():
 	if event.is_action_pressed("recognize_gesture"):
-		print("call recognition function")
+		#print("call recognition function")
 		register_gesture()
-		var recognizer = QPointCloudRecognizer.new()
-		recognizer.classify(gesture_resource)
-		for child in get_children():
-			child.queue_free()
-		points_normalized.clear()
-		points_normalized_int.clear()
-		points_raw.clear()
-		gesture_resource = null
-		recognizer.queue_free()
+		gesture_classified.emit(QPointCloudRecognizer.classify(gesture_resource))
+		reset_gesture()
 
 	if can_draw:
 		if event.is_action_pressed("line_press"):
-			print("mouse down")
+			#print("mouse down")
 			stroke = Line2D.new()
-			add_child(stroke)
 			stroke.begin_cap_mode = cap_mode
 			stroke.end_cap_mode = cap_mode
 			stroke.antialiased = true
 			stroke.width = line_width
+			add_child(stroke)
 		if event.is_action_released("line_press"):
-			print("mouse up")
+			#print("mouse up")
 			stroke = null
 			pass
 		
+
+func reset_gesture():
+	for child in get_children():
+			child.queue_free()
+	points_normalized.clear()
+	points_normalized_int.clear()
+	points_raw.clear()
+	gesture_name = ""
+	gesture_resource = null
 
 # handles line drawing
 func _process(delta: float) -> void:
@@ -80,19 +88,7 @@ func register_gesture():
 		var children = get_children()
 		for i in range(children.size()):
 			line_to_vec3_array(children[i], i)
-		prints("points_raw size:", points_raw.size())
-		print(points_raw)
-		print("-----------------------------------------------------------------------------------")
 		normalize_points()
-		#prints("size:", points_normalized.size())
-		#print(points_normalized)
-		#print("-----------------------------------------------------------------------------------")
-		prints("size int:", points_normalized_int.size())
-		print(points_normalized_int)
-		print("-----------------------------------------------------------------------------------")
-		print("lookup table")
-		print(LUT.size())
-		
 		save_gesture_to_resource()
 
 func line_to_vec3_array(line : Line2D, index : int):
@@ -104,7 +100,7 @@ func normalize_points():
 	# resample, scale, translate
 	# transform coords to int
 	# construct lut
-	
+	print("normalizing points")
 	points_normalized = normalization_resample(points_raw, SAMPLING_RES)
 	points_normalized = normalization_scale(points_normalized)
 	points_normalized = normalization_translate(points_normalized, centroid(points_normalized))
@@ -133,7 +129,7 @@ func normalization_scale(points : Array[Vector3]):
 	var new_points : Array[Vector3]
 	new_points.resize(points.size())
 	var new_scale : float = max(maxx - minx, maxy - miny)
-	prints("new scale", new_scale)
+	#prints("new scale", new_scale)
 	for i in range (points.size()):
 		var new_vec3 : Vector3 = Vector3((points[i].x - minx) / new_scale, (points[i].y - miny) / new_scale, points[i].z)
 		new_points[i] = new_vec3
@@ -235,12 +231,35 @@ func save_gesture_to_resource():
 	gesture_resource.points_int = points_normalized_int
 	gesture_resource.points = points_normalized
 	gesture_resource.LUT = LUT
-	#gesture_resource.constants.merge({
-		#"SAMPLING_RES" : SAMPLING_RES,
-		#"MAX_INT_COORDS" : MAX_INT_COORDS,
-		#"LUT_SIZE" : LUT_SIZE,
-		#"LUT_SCALE_FACTOR" : LUT_SCALE_FACTOR
-	#}, true)
-	#var save_path = "res://res.res"
-	#ResourceSaver.save(gesture_resource, save_path)
-	#print(ResourceLoader.load(save_path))
+	if gesture_name != "" and create_new_gesture:
+		gesture_resource.gesture_name = gesture_name
+		save_gesture_to_disk()
+	
+
+func save_gesture_to_disk():
+	var save_path = "res://gesture_templates/"
+	ResourceSaver.save(gesture_resource, save_path + gesture_filename + ".res")
+	#var dir = DirAccess.open("res://gesture_templates")
+	#if dir:
+		#dir.list_dir_begin()
+		#var file_name = dir.get_next()
+		#while file_name != "":
+			#var new_file_name = save_path + gesture_name + ".res"
+			#var counter = 1
+			#var b : bool = true
+			#while b:
+				#if new_file_name == file_name and file_name != "":
+					#new_file_name = save_path + gesture_name + "_" + str(counter) + ".res"
+					#file_name = dir.get_next()
+				#else:
+					#ResourceSaver.save(gesture_resource, new_file_name)
+					#b = false
+	ResourceLoader.load(save_path + gesture_filename + ".res")
+
+func on_create_new_gesture():
+	register_gesture()
+	#save_gesture_to_resource()
+	save_gesture_to_disk()
+	reset_gesture()
+	print("new gesture made")
+	

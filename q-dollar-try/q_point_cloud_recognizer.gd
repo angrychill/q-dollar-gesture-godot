@@ -1,5 +1,5 @@
 extends Node
-class_name QPointCloudRecognizer
+#class_name QPointCloudRecognizer
 
 @export var early_abandoning : bool = true
 @export var lower_bounding : bool = true
@@ -19,7 +19,7 @@ func _init() -> void:
 			file_name = dir.get_next()
 
 func classify(candidate : Gesture) -> StringName: #-> string, takes gesture candidate, template set
-	prints("received candidate", candidate)
+	#prints("received candidate", candidate)
 	var min_distance : float = INF
 	var gesture_class : StringName = "";
 	for template : Gesture in gesture_set:
@@ -126,18 +126,3 @@ func euclidean_distance(a : Vector3, b : Vector3) -> float:
 func sq_euclidean_distance(a : Vector3, b : Vector3) -> float:
 	var z : float = pow((a.x-b.x),2) + pow((a.y-b.y), 2)
 	return z
-
-#region gesture input
-var can_draw : bool = false
-func _input(event: InputEvent) -> void:
-
-	if event.is_action_pressed("start_gesture"):
-		print("space down")
-		can_draw = true
-	if event.is_action_released("start_gesture"):
-		print("space up")
-		can_draw = false
-	if event.is_action_pressed("recognize_gesture"):
-		print("call recognition function")
-		#register_gesture()
-#endregion

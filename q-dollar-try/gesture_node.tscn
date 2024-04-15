@@ -4,5 +4,5 @@
 
 [node name="Gesture" type="Node2D"]
 script = ExtResource("1_tn7ho")
-
-[node name="Line2D" type="Line2D" parent="."]
+gesture_name = &"Spiral"
+gesture_filename = "spiral_5"

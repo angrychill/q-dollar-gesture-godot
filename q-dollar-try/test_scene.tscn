@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://b3aso2gmns5mc"]
+
+[ext_resource type="Script" path="res://test_scene.gd" id="1_kc6t1"]
+[ext_resource type="Script" path="res://gesture_node.gd" id="2_kbjsd"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_kc6t1")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_top = 50
+
+[node name="Label" type="Label" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Gesture"
+
+[node name="GestureNode" type="Node2D" parent="."]
+script = ExtResource("2_kbjsd")
