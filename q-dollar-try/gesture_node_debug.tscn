@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c7k2fq5homxpk"]
-
-[ext_resource type="Script" path="res://gesture_node_debug.gd" id="1_0hhsy"]
-
-[node name="GestureNodeDebug" type="Node2D"]
-script = ExtResource("1_0hhsy")
-line_width = null
-joint_mode = null
-cap_mode = null
