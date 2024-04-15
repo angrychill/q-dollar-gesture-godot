@@ -100,7 +100,7 @@ func normalize_points():
 	# resample, scale, translate
 	# transform coords to int
 	# construct lut
-	print("normalizing points")
+	#print("normalizing points")
 	points_normalized = normalization_resample(points_raw, SAMPLING_RES)
 	points_normalized = normalization_scale(points_normalized)
 	points_normalized = normalization_translate(points_normalized, centroid(points_normalized))
@@ -238,7 +238,7 @@ func save_gesture_to_resource():
 
 func save_gesture_to_disk():
 	var save_path = "res://gesture_templates/"
-	ResourceSaver.save(gesture_resource, save_path + gesture_filename + ".res")
+	ResourceSaver.save(gesture_resource, save_path + gesture_filename + ".tres")
 	#var dir = DirAccess.open("res://gesture_templates")
 	#if dir:
 		#dir.list_dir_begin()
@@ -254,7 +254,7 @@ func save_gesture_to_disk():
 				#else:
 					#ResourceSaver.save(gesture_resource, new_file_name)
 					#b = false
-	ResourceLoader.load(save_path + gesture_filename + ".res")
+	ResourceLoader.load(save_path + gesture_filename + ".tres")
 
 func on_create_new_gesture():
 	register_gesture()

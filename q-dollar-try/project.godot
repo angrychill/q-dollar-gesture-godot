@@ -20,7 +20,7 @@ QPointCloudRecognizer="*res://q_recognizer/q_point_cloud_recognizer.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/q_gesture_recognizer/plugin.cfg")
+enabled=PackedStringArray()
 
 [input]
 
