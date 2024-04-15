@@ -16,6 +16,8 @@ func _init() -> void:
 		while file_name != "":
 			var rname = "res://gesture_templates/" + str(file_name)
 			gesture_set.append(ResourceLoader.load(rname))
+			#var sname = rname.replace(".res", ".tres")
+			#ResourceSaver.save(gesture_set.back(), sname)
 			file_name = dir.get_next()
 
 func classify(candidate : Gesture) -> StringName: #-> string, takes gesture candidate, template set
