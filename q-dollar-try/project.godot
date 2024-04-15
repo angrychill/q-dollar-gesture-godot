@@ -16,11 +16,11 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-QPointCloudRecognizer="*res://q_point_cloud_recognizer.gd"
+QPointCloudRecognizer="*res://q_recognizer/q_point_cloud_recognizer.gd"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/q_gesture_recognizer/plugin.cfg")
+enabled=PackedStringArray()
 
 [input]
 
